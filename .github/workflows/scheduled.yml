@@ -1,0 +1,42 @@
+name: Scheduled
+
+on:
+  schedule:
+    - cron: '0 0 * * 6'   # Run at 00:00 every Saturday (UTC).
+
+env:
+  CARGO_TERM_COLOR: always  # Color cargo commands and output.
+
+jobs:
+
+  test_latest:
+    name: Test latest versions
+    strategy:
+      matrix:
+        toolchain:  # Run tests on all three toolchains.
+          - stable
+          - beta
+          - nightly
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout  # Checkout this repo's code.
+        uses: actions/checkout@v4
+      - name: Install # Install specified toolchain (stable, beta, or nightly).
+        run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - name: Lock  # Generate new lock file using latest versions of dependencies.
+        run: cargo generate-lockfile
+      - name: Test  # Using using dependencies from lock file we just generated.
+        run: set RUST_BACKTRACE=1; cargo test --locked --all-features --verbose
+
+  check_minimal:
+    name: Check minimal versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout  # Checkout this repo's code.
+        uses: actions/checkout@v4
+      - name: Install # Install nightly toolchain.
+        run: rustup update nightly && rustup default nightly
+      - name: Lock  # Generate new lock file using minimum allowed versions of dependencies.
+        run: cargo generate-lockfile -Z minimal-versions
+      - name: Check compilation  # Using dependencies from lock file we just generated.
+        run: cargo check --locked
