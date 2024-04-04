@@ -35,7 +35,7 @@
 //! [^precision_note]: Some of the methods implemented on this trait are used by the methods on the
 //! [`Compare`] trait.
 //!
-//! ## Equality assertions for floats
+//! # Equality assertions for floats
 //!
 //! ```
 //! use numtest::{assert_equal_to_decimal, assert_equal_to_atol, assert_equal_to_rtol, Compare};
