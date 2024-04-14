@@ -1,6 +1,185 @@
 #[allow(unused_imports)]
 use crate::compare::Compare;
 
+/// Asserts element-wise exact equality of two array-like structs.
+///
+/// This macro iterates over the elements of the two structs and checks if each pair of elements is
+/// exactly equal using [`Compare::is_equal`]. Additionally, this macro also checks whether the two
+/// structs have the same number of elements.
+///
+/// # Arguments
+///
+/// * `arr1` - First array-like struct to compare. Must implement the [`Iterator`] trait.
+/// * `arr2` - Second array-like struct to compare. Must implement the [`Iterator`] trait.
+///
+/// # Panics
+///
+/// * If the array-like structs do not have the same number of elements.
+/// * If any of the element-wise comparisons fail.
+///
+/// # Note
+///
+/// See [`Compare::is_equal`] for details on how exact equality is defined.
+///
+/// # Warning
+///
+/// We **_cannot_** directly perform comparisons between 2D `ndarray` arrays and `nalgebra`
+/// matrices. This is because `ndarray` uses a row-major layout, while `nalgebra` uses a
+/// column-major layout. This is demonstrated in the last example.
+///
+/// # Warning
+///
+/// Since this macro simply iterates over all elements, you theoretically _are_ able to compare
+/// 1D arrays with 2D arrays. For example,
+///
+/// ```
+/// use ndarray::{Array1, Array2};
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let arr_1d = Array1::from_vec(vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]);
+/// let arr_2d = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
+/// assert_arrays_equal!(&arr_1d, &arr_2d);
+/// ```
+///
+/// However, in general, this practice should be avoided. Comparisons between structs of different
+/// shapes will not be detected by the `numtest` crate since we do not specify dependencies to
+/// external numerical computing crates such as `ndarray` and `nalgebra`.
+///
+/// # Examples
+///
+/// [`std::array`]
+///
+/// ```
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let arr1 = [1.1, 2.2, 3.3];
+/// let arr2 = [1.1, 2.2, 3.3];
+/// assert_arrays_equal!(&arr1, &arr2);
+/// ```
+///
+/// [`Vec`]
+///
+/// ```
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let vec1 = vec![1.1, 2.2, 3.3];
+/// let vec2 = vec![1.1, 2.2, 3.3];
+/// assert_arrays_equal!(&vec1, &vec2);
+/// ```
+///
+/// [`ndarray::Array1`](https://docs.rs/ndarray/0.15.6/ndarray/type.Array1.html)
+///
+/// ```
+/// use ndarray::Array1;
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
+/// let arr2 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
+/// assert_arrays_equal!(&arr1, &arr2);
+/// ```
+///
+/// [`nalgebra::Vector3`](https://docs.rs/nalgebra/0.25.0/nalgebra/base/type.Vector3.html)
+///
+/// ```
+/// use nalgebra::Vector3;
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let arr1 = Vector3::new(1.1, 2.2, 3.3);
+/// let arr2 = Vector3::new(1.1, 2.2, 3.3);
+/// assert_arrays_equal!(&arr1, &arr2);
+/// ```
+///
+/// Mix of 1D array-like structs
+///
+/// ```
+/// use nalgebra::Vector3;
+/// use ndarray::Array1;
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let std_arr = [1.1, 2.2, 3.3];
+/// let std_vec = vec![1.1, 2.2, 3.3];
+/// let ndarray_arr = Array1::from_vec(vec![1.1, 2.2, 3.3]);
+/// let nalgebra_vec = Vector3::new(1.1, 2.2, 3.3);
+///
+/// assert_arrays_equal!(&std_arr, &std_vec);
+/// assert_arrays_equal!(&std_arr, &ndarray_arr);
+/// assert_arrays_equal!(&std_arr, &nalgebra_vec);
+/// ```
+///
+/// [`ndarray::Array2`](https://docs.rs/ndarray/0.15.6/ndarray/type.Array2.html)
+///
+/// ```
+/// use ndarray::Array2;
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let arr1 = Array2::from_shape_vec(
+///     (3, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9],
+/// ).unwrap();
+/// let arr2 = Array2::from_shape_vec(
+///     (3, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9],
+/// ).unwrap();
+/// assert_arrays_equal!(&arr1, &arr2);
+/// ```
+///
+/// [`nalgebra::Matrix3`](https://docs.rs/nalgebra/0.25.0/nalgebra/base/type.Matrix3.html)
+///
+/// ```
+/// use nalgebra::Matrix3;
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
+/// let mat2 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
+/// assert_arrays_equal!(&mat1, &mat2);
+/// ```
+///
+/// [`nalgebra::Matrix3`](https://docs.rs/nalgebra/0.25.0/nalgebra/base/type.Matrix3.html) and
+/// [`ndarray::Array2`](https://docs.rs/ndarray/0.15.6/ndarray/type.Array2.html)
+///
+/// ```should_panic
+/// use nalgebra::Matrix3;
+/// use ndarray::Array2;
+/// use numtest::{assert_arrays_equal, Compare};
+///
+/// let mat = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
+/// let arr = Array2::from_shape_vec(
+///     (3, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9],
+/// ).unwrap();
+/// assert_arrays_equal!(&mat, &arr);
+/// ```
+#[macro_export]
+macro_rules! assert_arrays_equal {
+    ($arr1:expr, $arr2:expr) => {
+        // "Tracker" variables.
+        let mut all_equal: bool = true;
+        let mut not_equal_count = 0;
+
+        // Assert that the two arrays have the same number of elements.
+        let count1 = $arr1.iter().count();
+        let count2 = $arr2.iter().count();
+        if count1 != count2 {
+            panic!("The two arrays must have the same number of elements.")
+        }
+
+        // Count the number of elements that aren't equal, and track the smallest precision.
+        for (a, b) in $arr1.iter().zip($arr2.iter()) {
+            let equal = a.is_equal(*b);
+            if !equal {
+                not_equal_count += 1;
+            }
+            all_equal &= equal;
+        }
+
+        // Panic if equality not satisfied.
+        if !all_equal {
+            panic!(
+                "\nThe two array-like structs are not exactly equal.\n --> Mismatched \
+                Elements: {}/{}\n",
+                not_equal_count, count1
+            )
+        }
+    };
+}
+
 /// Asserts element-wise equality of two array-like structs to within a specified decimal precision.
 ///
 /// This macro iterates over the elements of the two structs and checks if each pair of elements is
@@ -31,7 +210,7 @@ use crate::compare::Compare;
 ///
 /// # Warning
 ///
-/// Since this macro simply iterates over all elements, you theoreticaly _are_ able to compare
+/// Since this macro simply iterates over all elements, you theoretically _are_ able to compare
 /// 1D arrays with 2D arrays. For example,
 ///
 /// ```
@@ -215,7 +394,7 @@ macro_rules! assert_arrays_equal_to_decimal {
 ///
 /// # Warning
 ///
-/// Since this macro simply iterates over all elements, you theoreticaly _are_ able to compare
+/// Since this macro simply iterates over all elements, you theoretically _are_ able to compare
 /// 1D arrays with 2D arrays. For example,
 ///
 /// ```
@@ -399,7 +578,7 @@ macro_rules! assert_arrays_equal_to_atol {
 ///
 /// # Warning
 ///
-/// Since this macro simply iterates over all elements, you theoreticaly _are_ able to compare
+/// Since this macro simply iterates over all elements, you theoretically _are_ able to compare
 /// 1D arrays with 2D arrays. For example,
 ///
 /// ```
@@ -557,6 +736,96 @@ mod tests {
     use super::*;
     use nalgebra::{Matrix3, Vector3};
     use ndarray::{Array1, Array2};
+
+    #[test]
+    fn test_std_array_exact_pass() {
+        let arr1: [f64; 3] = [1.1, 2.2, 3.3];
+        let arr2: [f64; 3] = [1.1, 2.2, 3.3];
+        assert_arrays_equal!(&arr1, &arr2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_std_array_exact_fail() {
+        let arr1: [f64; 3] = [1.1, 2.2, 3.3];
+        let arr2: [f64; 3] = [1.1, 2.2, 3.33];
+        assert_arrays_equal!(&arr1, &arr2);
+    }
+
+    #[test]
+    fn test_std_vec_exact_pass() {
+        let vec1 = Vec::from([1.1, 2.2, 3.3]);
+        let vec2 = Vec::from([1.1, 2.2, 3.3]);
+        assert_arrays_equal!(&vec1, &vec2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_std_vec_exact_fail() {
+        let vec1 = Vec::from([1.1, 2.2, 3.3]);
+        let vec2 = Vec::from([1.1, 2.2, 3.33]);
+        assert_arrays_equal!(&vec1, &vec2);
+    }
+
+    #[test]
+    fn test_ndarray_array1_exact_pass() {
+        let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
+        let arr2 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
+        assert_arrays_equal!(&arr1, &arr2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_ndarray_array1_exact_fail() {
+        let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
+        let arr2 = Array1::from_vec(vec![1.1, 2.2, 3.33]);
+        assert_arrays_equal!(&arr1, &arr2);
+    }
+
+    #[test]
+    fn test_ndarray_array2_exact_pass() {
+        let arr1 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
+        let arr2 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
+        assert_arrays_equal!(&arr1, &arr2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_ndarray_array2_exact_fail() {
+        let arr1 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
+        let arr2 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.33, 4.4, 5.5, 6.66]).unwrap();
+        assert_arrays_equal!(&arr1, &arr2);
+    }
+
+    #[test]
+    fn test_nalgebra_vector3_exact_pass() {
+        let vec1 = Vector3::new(1.1, 2.2, 3.3);
+        let vec2 = Vector3::new(1.1, 2.2, 3.3);
+        assert_arrays_equal!(&vec1, &vec2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_nalgebra_vector3_exact_fail() {
+        let vec1 = Vector3::new(1.1, 2.2, 3.3);
+        let vec2 = Vector3::new(1.1, 2.2, 3.33);
+        assert_arrays_equal!(&vec1, &vec2);
+    }
+
+    #[test]
+    fn test_nalgebra_matrix3_exact_pass() {
+        let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
+        let mat2 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
+        assert_arrays_equal!(&mat1, &mat2);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_nalgebra_matrix3_exact_fail() {
+        let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
+        let mat2 = Matrix3::new(1.1, 2.2, 3.33, 4.4, 5.5, 6.66, 7.7, 8.8, 9.99);
+        assert_arrays_equal!(&mat1, &mat2);
+    }
 
     #[test]
     fn test_std_array_decimal_pass() {
