@@ -15,14 +15,26 @@ Please see https://docs.rs/numtest.
 ### Float equality
 
 ```rust
-use numtest::{assert_equal_to_decimal, assert_equal_to_atol, assert_equal_to_rtol, Compare};
+use numtest::{
+    assert_equal, assert_equal_to_decimal, assert_equal_to_atol, assert_equal_to_rtol, Compare
+};
 
+assert_equal!(2.0, 2.0);
 assert_equal_to_decimal!(2.0, 2.012, 1);
 assert_equal_to_atol!(2.0, 2.00001, 1e-3);
 assert_equal_to_rtol!(2.0, 2.01, 0.01);
 ```
 
 ### Array equality
+
+```rust
+use numtest::{assert_arrays_equal, Compare};
+
+let arr1 = [1.1, 2.2, 3.3];
+let arr2 = [1.1, 2.2, 3.3];
+
+assert_arrays_equal!(&arr1, &arr2);
+```
 
 ```rust
 use numtest::{assert_arrays_equal_to_decimal, Compare};
@@ -36,7 +48,10 @@ assert_arrays_equal_to_decimal!(&arr1, &arr2, 1);
 ```rust
 use nalgebra::Vector3;
 use ndarray::Array1;
-use numtest::{assert_arrays_equal_to_decimal, Compare};
+use numtest::{
+    assert_arrays_equal_to_atol, assert_arrays_equal_to_decimal, assert_arrays_equal_to_rtol,
+    Compare,
+};
 
 let std_arr = [1.1, 2.2, 3.3];
 let std_vec = vec![1.1, 2.22, 3.33];
@@ -44,8 +59,8 @@ let ndarray_arr = Array1::from_vec(vec![1.12, 2.23, 3.34]);
 let nalgebra_vec = Vector3::new(1.13, 2.24, 3.35);
 
 assert_arrays_equal_to_decimal!(&std_arr, &std_vec, 1);
-assert_arrays_equal_to_decimal!(&std_arr, &ndarray_arr, 1);
-assert_arrays_equal_to_decimal!(&std_arr, &nalgebra_vec, 1);
+assert_arrays_equal_to_atol!(&std_arr, &ndarray_arr, 0.06);
+assert_arrays_equal_to_rtol!(&std_arr, &nalgebra_vec, 0.03);
 ```
 
 ```rust

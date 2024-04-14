@@ -3,7 +3,38 @@ use num_traits::Float;
 
 /// Trait for comparing floating-point numbers.
 pub trait Compare {
-    /// Compares two floating-point numbers with the specified decimal precision.
+    /// Determines if a floating-point number is exactly equal to another.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The first floating-point number to compare.
+    /// * `other` - The second floating-point number to compare against.
+    ///
+    /// # Returns
+    ///
+    /// `true` if the two floats are exactly equal to one another, `false` otherwise.
+    ///
+    /// # Special Cases
+    ///
+    /// Like [NumPy](https://numpy.org/doc/stable/reference/generated/numpy.testing.assert_equal.html),
+    /// this method handles `NaN` comparisons as if `NaN` were a "normal" number (in contrast with
+    /// the [IEEE 754 Standards](https://en.wikipedia.org/wiki/NaN), which say that `NaN`
+    /// cannot be equal to itself, since `NaN` compared to anything returns `false`). Additionally,
+    /// we assume that `NaN == -NaN`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use numtest::Compare;
+    ///
+    /// assert!(123.45678.is_equal(123.45678));
+    /// ```
+    fn is_equal(&self, other: Self) -> bool
+    where
+        Self: Float;
+
+    /// Determines if a floating-point number is equal to another within the specified decimal
+    /// precision.
     ///
     /// # Arguments
     ///
@@ -225,6 +256,17 @@ pub trait Compare {
 macro_rules! impl_compare {
     ($t:ty) => {
         impl Compare for $t {
+            // Implements the is_equal method.
+            fn is_equal(&self, other: Self) -> bool {
+                // Edge case: NaNs.
+                if self.is_nan() || other.is_nan() {
+                    return self.is_nan() && other.is_nan();
+                }
+
+                // Standard case.
+                *self == other
+            }
+
             // Implements the is_equal_to_decimal method.
             fn is_equal_to_decimal(&self, other: Self, decimal: i32) -> (bool, i32) {
                 // Edge case: NaNs.
@@ -425,6 +467,45 @@ mod tests {
         } else {
             assert_eq!(rel_diff, exp_rel_diff);
         }
+    }
+
+    #[test]
+    fn is_equal() {
+        // f32 equal.
+        assert!(0.0_f32.is_equal(0.0_f32));
+        assert!(1.0_f32.is_equal(1.0_f32));
+        assert!(1.1234_f32.is_equal(1.1234_f32));
+        assert!((-1.0_f32).is_equal(-1.0_f32));
+        assert!(f32::NAN.is_equal(f32::NAN));
+        assert!((-f32::NAN).is_equal(f32::NAN));
+        assert!((-f32::NAN).is_equal(-f32::NAN));
+        assert!(f32::INFINITY.is_equal(f32::INFINITY));
+        assert!(f32::NEG_INFINITY.is_equal(f32::NEG_INFINITY));
+        assert!((-f32::INFINITY).is_equal(f32::NEG_INFINITY));
+
+        // f32 unequal.
+        assert!(!0.0_f32.is_equal(1.0_f32));
+        assert!(!1.234567_f32.is_equal(1.234568_f32));
+        assert!(!f32::NAN.is_equal(0.0_f32));
+        assert!(!f32::NAN.is_equal(f32::INFINITY));
+
+        // f64 equal.
+        assert!(0.0_f64.is_equal(0.0_f64));
+        assert!(1.0_f64.is_equal(1.0_f64));
+        assert!(1.1234_f64.is_equal(1.1234_f64));
+        assert!((-1.0_f64).is_equal(-1.0_f64));
+        assert!(f64::NAN.is_equal(f64::NAN));
+        assert!((-f64::NAN).is_equal(f64::NAN));
+        assert!((-f64::NAN).is_equal(-f64::NAN));
+        assert!(f64::INFINITY.is_equal(f64::INFINITY));
+        assert!(f64::NEG_INFINITY.is_equal(f64::NEG_INFINITY));
+        assert!((-f64::INFINITY).is_equal(f64::NEG_INFINITY));
+
+        // f64 unequal.
+        assert!(!0.0_f64.is_equal(1.0_f64));
+        assert!(!1.234567_f64.is_equal(1.234568_f64));
+        assert!(!f64::NAN.is_equal(0.0_f64));
+        assert!(!f64::NAN.is_equal(f64::INFINITY));
     }
 
     #[test]

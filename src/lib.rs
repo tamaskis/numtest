@@ -8,10 +8,11 @@
 //!
 //! # Summary
 //!
-//! This package provides four main sets of utilities:
+//! This crate provides four main sets of utilities:
 //!
 //! 1. Macros for asserting equality between floating-point ([`f32`] and [`f64`]) numbers:
 //!
+//!     * [`assert_equal`]
 //!     * [`assert_equal_to_decimal`]
 //!     * [`assert_equal_to_atol`]
 //!     * [`assert_equal_to_rtol`]
@@ -19,6 +20,7 @@
 //! 1. Macros for asserting equality between array-like structs of floats (the structs just need to
 //! implement the [`Iterator`] trait):
 //!
+//!     * [`assert_arrays_equal`]
 //!     * [`assert_arrays_equal_to_decimal`]
 //!     * [`assert_arrays_equal_to_atol`]
 //!     * [`assert_arrays_equal_to_rtol`]
@@ -38,14 +40,26 @@
 //! # Equality assertions for floats
 //!
 //! ```
-//! use numtest::{assert_equal_to_decimal, assert_equal_to_atol, assert_equal_to_rtol, Compare};
+//! use numtest::{
+//!     assert_equal, assert_equal_to_decimal, assert_equal_to_atol, assert_equal_to_rtol, Compare
+//! };
 //!
+//! assert_equal!(2.0, 2.0);
 //! assert_equal_to_decimal!(2.0, 2.012, 1);
 //! assert_equal_to_atol!(2.0, 2.00001, 1e-3);
 //! assert_equal_to_rtol!(2.0, 2.01, 0.01);
 //! ```
 //!
 //! # Equality assertions for arrays
+//!
+//! ```
+//! use numtest::{assert_arrays_equal, Compare};
+//!
+//! let arr1 = [1.1, 2.2, 3.3];
+//! let arr2 = [1.1, 2.2, 3.3];
+//!
+//! assert_arrays_equal!(&arr1, &arr2);
+//! ```
 //!
 //! ```
 //! use numtest::{assert_arrays_equal_to_decimal, Compare};
@@ -59,7 +73,10 @@
 //! ```
 //! use nalgebra::Vector3;
 //! use ndarray::Array1;
-//! use numtest::{assert_arrays_equal_to_decimal, Compare};
+//! use numtest::{
+//!     assert_arrays_equal_to_atol, assert_arrays_equal_to_decimal, assert_arrays_equal_to_rtol,
+//!     Compare,
+//! };
 //!
 //! let std_arr = [1.1, 2.2, 3.3];
 //! let std_vec = vec![1.1, 2.22, 3.33];
@@ -67,8 +84,8 @@
 //! let nalgebra_vec = Vector3::new(1.13, 2.24, 3.35);
 //!
 //! assert_arrays_equal_to_decimal!(&std_arr, &std_vec, 1);
-//! assert_arrays_equal_to_decimal!(&std_arr, &ndarray_arr, 1);
-//! assert_arrays_equal_to_decimal!(&std_arr, &nalgebra_vec, 1);
+//! assert_arrays_equal_to_atol!(&std_arr, &ndarray_arr, 0.06);
+//! assert_arrays_equal_to_rtol!(&std_arr, &nalgebra_vec, 0.03);
 //! ```
 //!
 //! ```
