@@ -381,7 +381,7 @@ mod tests {
 
     /// Function used for testing the `is_equal_to_decimal` method.
     ///
-    /// Arguments:
+    /// # Arguments
     ///
     /// * `a` - The first floating-point number to compare.
     /// * `b` - The second floating-point number to compare against.
@@ -409,7 +409,7 @@ mod tests {
 
     /// Function used for testing the `is_equal_to_atol` method.
     ///
-    /// Arguments:
+    /// # Arguments
     ///
     /// * `a` - The first floating-point number to compare.
     /// * `b` - The second floating-point number to compare against.
@@ -440,7 +440,7 @@ mod tests {
 
     /// Function used for testing the `is_equal_to_rtol` method.
     ///
-    /// Arguments:
+    /// # Arguments
     ///
     /// * `a` - The first floating-point number to compare.
     /// * `b` - The second floating-point number to compare against.
