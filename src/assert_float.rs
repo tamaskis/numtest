@@ -19,19 +19,19 @@ use crate::compare::Compare;
 /// # Examples
 ///
 /// ```
-/// use numtest::{assert_equal, Compare};
+/// use numtest::*;
 ///
 /// assert_equal!(2.0, 2.0)
 /// ```
 ///
 /// ```
-/// use numtest::{assert_equal, Compare};
+/// use numtest::*;
 ///
 /// assert_equal!(f64::NAN, f64::NAN)
 /// ```
 ///
 /// ```should_panic
-/// use numtest::{assert_equal, Compare};
+/// use numtest::*;
 ///
 /// assert_equal!(2.0, 2.01)
 /// ```
@@ -40,7 +40,10 @@ macro_rules! assert_equal {
     ($a:expr, $b:expr) => {{
         let are_equal = $a.is_equal($b);
         if !are_equal {
-            panic!("Values are not exactly equal.");
+            panic!(
+                "\nValues are not exactly equal.\n --> a: {:?}\n --> b: {:?}\n",
+                $a, $b
+            );
         }
     }};
 }
@@ -65,13 +68,13 @@ macro_rules! assert_equal {
 /// # Examples
 ///
 /// ```
-/// use numtest::{assert_equal_to_decimal, Compare};
+/// use numtest::*;
 ///
 /// assert_equal_to_decimal!(2.0, 2.012, 2)
 /// ```
 ///
 /// ```should_panic
-/// use numtest::{assert_equal_to_decimal, Compare};
+/// use numtest::*;
 ///
 /// assert_equal_to_decimal!(2.0, 2.012, 4)
 /// ```
@@ -81,8 +84,9 @@ macro_rules! assert_equal_to_decimal {
         let (are_equal, actual_decimal) = $a.is_equal_to_decimal($b, $decimal);
         if !are_equal {
             panic!(
-                "Values are not equal to {} decimal places. They ARE equal to {} decimal places.",
-                $decimal, actual_decimal
+                "\nValues are not equal to {} decimal places. They ARE equal to {} decimal places.\
+                \n --> a: {:?}\n --> b: {:?}\n",
+                $decimal, actual_decimal, $a, $b
             );
         }
     }};
@@ -108,13 +112,13 @@ macro_rules! assert_equal_to_decimal {
 /// # Examples
 ///
 /// ```
-/// use numtest::{assert_equal_to_atol, Compare};
+/// use numtest::*;
 ///
 /// assert_equal_to_atol!(2.0, 2.00001, 1e-3);
 /// ```
 ///
 /// ```should_panic
-/// use numtest::{assert_equal_to_atol, Compare};
+/// use numtest::*;
 ///
 /// assert_equal_to_atol!(2.0, 2.00001, 1e-6);
 /// ```
@@ -124,9 +128,9 @@ macro_rules! assert_equal_to_atol {
         let (are_equal, abs_diff) = $a.is_equal_to_atol($b, $atol);
         if !are_equal {
             panic!(
-                "Values are not equal to within an absolute tolerance of {}. They ARE equal to \
-                within an absolute tolerance of {}.",
-                $atol, abs_diff
+                "\nValues are not equal to within an absolute tolerance of {}. They ARE equal to \
+                within an absolute tolerance of {}.\n --> a: {:?}\n --> b: {:?}\n",
+                $atol, abs_diff, $a, $b
             );
         }
     }};
@@ -152,13 +156,13 @@ macro_rules! assert_equal_to_atol {
 /// # Examples
 ///
 /// ```
-/// use numtest::{assert_equal_to_rtol, Compare};
+/// use numtest::*;
 ///
 /// assert_equal_to_rtol!(2.0, 2.01, 0.05);
 /// ```
 ///
 /// ```should_panic
-/// use numtest::{assert_equal_to_rtol, Compare};
+/// use numtest::*;
 ///
 /// assert_equal_to_rtol!(2.0, 2.01, 1e-5);
 /// ```
@@ -168,9 +172,9 @@ macro_rules! assert_equal_to_rtol {
         let (are_equal, rel_diff) = $a.is_equal_to_rtol($b, $rtol);
         if !are_equal {
             panic!(
-                "Values are not equal to within a relative tolerance of {}. They ARE equal to \
-                within a relative tolerance of {}.",
-                $rtol, rel_diff
+                "\nValues are not equal to within a relative tolerance of {}. They ARE equal to \
+                within a relative tolerance of {}.\n --> a: {:?}\n --> b: {:?}\n",
+                $rtol, rel_diff, $a, $b
             );
         }
     }};
