@@ -103,11 +103,11 @@ pub trait Compare {
     /// # Note
     ///
     /// * If the two floats are exactly equal, then the actual decimal precision will be returned as
-    /// either [`f32::MIN_10_EXP`] or [`f64::MIN_10_EXP`] (depending on the type of floats being
-    /// compared).
+    ///   either [`f32::MIN_10_EXP`] or [`f64::MIN_10_EXP`] (depending on the type of floats being
+    ///   compared).
     /// * If the two floats are completely unequal (for example, comparing `NaN` with `0.0` or
-    /// `Inf`), the actual decimal precision will be returned as either [`f32::MAX_10_EXP`] or
-    /// [`f64::MAX_10_EXP`] (depending on the type of floats being compared).
+    ///   `Inf`), the actual decimal precision will be returned as either [`f32::MAX_10_EXP`] or
+    ///   [`f64::MAX_10_EXP`] (depending on the type of floats being compared).
     ///
     /// # Warning
     ///

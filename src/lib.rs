@@ -18,7 +18,7 @@
 //!     * [`assert_equal_to_rtol`]
 //!
 //! 1. Macros for asserting equality between array-like structs of floats (the structs just need to
-//! implement the [`Iterator`] trait):
+//!    implement the [`Iterator`] trait):
 //!
 //!     * [`assert_arrays_equal`]
 //!     * [`assert_arrays_equal_to_decimal`]
@@ -26,10 +26,10 @@
 //!     * [`assert_arrays_equal_to_rtol`]
 //!
 //! 1. The [`Compare`] trait[^compare_note] (implemented for [`f32`] and [`f64`] types) for
-//! performing comparisons between floating-point numbers.
+//!    performing comparisons between floating-point numbers.
 //! 1. The [`Precision`] trait[^precision_note] (implemented for [`f32`] and [`f64`] types)
-//! providing methods for accessing information regarding the precision of an _instance_ of a
-//! floating-point type.
+//!    providing methods for accessing information regarding the precision of an _instance_ of a
+//!    floating-point type.
 //!
 //! [^compare_note]: The methods implemented on this trait are used by the assertion macros for
 //! performing float comparisons.
@@ -40,9 +40,7 @@
 //! # Equality assertions for floats
 //!
 //! ```
-//! use numtest::{
-//!     assert_equal, assert_equal_to_decimal, assert_equal_to_atol, assert_equal_to_rtol, Compare
-//! };
+//! use numtest::*;
 //!
 //! assert_equal!(2.0, 2.0);
 //! assert_equal_to_decimal!(2.0, 2.012, 1);
@@ -53,7 +51,7 @@
 //! # Equality assertions for arrays
 //!
 //! ```
-//! use numtest::{assert_arrays_equal, Compare};
+//! use numtest::*;
 //!
 //! let arr1 = [1.1, 2.2, 3.3];
 //! let arr2 = [1.1, 2.2, 3.3];
@@ -62,7 +60,7 @@
 //! ```
 //!
 //! ```
-//! use numtest::{assert_arrays_equal_to_decimal, Compare};
+//! use numtest::*;
 //!
 //! let arr1 = [1.1, 2.2, 3.3];
 //! let arr2 = [1.1, 2.22, 3.33];
@@ -73,10 +71,7 @@
 //! ```
 //! use nalgebra::Vector3;
 //! use ndarray::Array1;
-//! use numtest::{
-//!     assert_arrays_equal_to_atol, assert_arrays_equal_to_decimal, assert_arrays_equal_to_rtol,
-//!     Compare,
-//! };
+//! use numtest::*;
 //!
 //! let std_arr = [1.1, 2.2, 3.3];
 //! let std_vec = vec![1.1, 2.22, 3.33];
@@ -90,7 +85,7 @@
 //!
 //! ```
 //! use nalgebra::Matrix3;
-//! use numtest::{assert_arrays_equal_to_decimal, Compare};
+//! use numtest::*;
 //!
 //! let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
 //! let mat2 = Matrix3::new(1.1, 2.22, 3.33, 4.4, 5.55, 6.66, 7.7, 8.88, 9.99);
