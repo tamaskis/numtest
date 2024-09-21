@@ -38,7 +38,7 @@ macro_rules! validate_counts {
         if $count1 != $count2 {
             panic!(
                 "\nThe two arrays must have the same number of elements.\n --> arr1 num elements\
-                : {}\n --> arr 2 num elements: {}\n",
+                : {}\n --> arr2 num elements: {}\n",
                 $count1, $count2
             );
         }
@@ -71,7 +71,7 @@ macro_rules! get_mismatched_elements_str {
 
             // Append formatted output to the string.
             $output.push_str(&format!(
-                "{}{:>15}{} {}{:>15}{}\n",
+                "{}{:>25}{} {}{:>25}{}\n",
                 red_bold_start, a, reset, red_bold_start, b, reset
             ));
         }
