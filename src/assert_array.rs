@@ -57,8 +57,8 @@ macro_rules! validate_counts {
 macro_rules! get_mismatched_elements_str {
     ($arr1:expr, $arr2:expr, $idx_mismatched:expr, $output:expr) => {
         // Add the header.
-        $output.push_str(&format!("{:>15} {:>15}\n", "arr1", "arr2"));
-        $output.push_str(&format!("{:>15} {:>15}\n", "----", "----"));
+        $output.push_str(&format!("{:>25} {:>25}\n", "arr1", "arr2"));
+        $output.push_str(&format!("{:>25} {:>25}\n", "----", "----"));
 
         // Iterate over all elements.
         for (idx, (a, b)) in $arr1.iter().zip($arr2.iter()).enumerate() {
