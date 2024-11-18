@@ -86,8 +86,10 @@ macro_rules! get_mismatched_elements_str {
 ///
 /// # Arguments
 ///
-/// * `arr1` - First array-like struct to compare. Must implement the [`Iterator`] trait.
-/// * `arr2` - Second array-like struct to compare. Must implement the [`Iterator`] trait.
+/// * `arr1` - First array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
+/// * `arr2` - Second array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
 ///
 /// # Panics
 ///
@@ -264,8 +266,10 @@ macro_rules! assert_arrays_equal {
 ///
 /// # Arguments
 ///
-/// * `arr1` - First array-like struct to compare. Must implement the [`Iterator`] trait.
-/// * `arr2` - Second array-like struct to compare. Must implement the [`Iterator`] trait.
+/// * `arr1` - First array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
+/// * `arr2` - Second array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
 /// * `decimal` - Decimal precision to use for comparison.
 ///
 /// # Panics
@@ -447,8 +451,10 @@ macro_rules! assert_arrays_equal_to_decimal {
 ///
 /// # Arguments
 ///
-/// * `arr1` - First array-like struct to compare. Must implement the [`Iterator`] trait.
-/// * `arr2` - Second array-like struct to compare. Must implement the [`Iterator`] trait.
+/// * `arr1` - First array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
+/// * `arr2` - Second array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
 /// * `atol` - Absolute tolerance.
 ///
 /// # Panics
@@ -634,8 +640,10 @@ macro_rules! assert_arrays_equal_to_atol {
 ///
 /// # Arguments
 ///
-/// * `arr1` - First array-like struct to compare. Must implement the [`Iterator`] trait.
-/// * `arr2` - Second array-like struct to compare. Must implement the [`Iterator`] trait.
+/// * `arr1` - First array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
+/// * `arr2` - Second array-like struct to compare. Must either implement the [`Iterator`] trait or
+///            have an `iter` method.
 /// * `rtol` - Relative tolerance.
 ///
 /// # Panics

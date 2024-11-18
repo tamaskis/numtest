@@ -18,7 +18,7 @@
 //!     * [`assert_equal_to_rtol`]
 //!
 //! 1. Macros for asserting equality between array-like structs of floats (the structs just need to
-//!    implement the [`Iterator`] trait):
+//!    either implement the [`Iterator`] trait or have an `iter` method):
 //!
 //!     * [`assert_arrays_equal`]
 //!     * [`assert_arrays_equal_to_decimal`]
