@@ -71,7 +71,7 @@ macro_rules! get_mismatched_elements_str {
 
             // Append formatted output to the string.
             $output.push_str(&format!(
-                "{}{:>25}{} {}{:>25}{}\n",
+                "{}{:>25e}{} {}{:>25e}{}\n",
                 red_bold_start, a, reset, red_bold_start, b, reset
             ));
         }

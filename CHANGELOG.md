@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+1. Array components are now printed in scientific notation.
+
 ## 0.2.0
 
 1. Updated `nalgebra` dev dependency from `0.32.5` to `0.33.0`.
