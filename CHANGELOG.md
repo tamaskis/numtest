@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+1. Updated `nalgebra` dev dependency from `0.33.0` to `0.33.2`.
+1. Updated `ndarray` dev dependency from `0.16.0` to `0.16.1`.
+
 ## 0.2.1
 
 1. Array components are now printed in scientific notation.
