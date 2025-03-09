@@ -96,7 +96,7 @@
 // Linter setup.
 #![warn(missing_docs)]
 
-// Linking project modules.
+// Module declarations.
 pub(crate) mod assert_array;
 pub(crate) mod assert_float;
 pub(crate) mod compare;
