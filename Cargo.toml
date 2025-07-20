@@ -1,14 +1,17 @@
 [package]
 name = "numtest"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["Tamas Kis"]
-edition = "2021"
+edition = "2024"
 description = "Unit testing for numerical methods."
 documentation = "https://docs.rs/numtest"
 repository = "https://github.com/tamaskis/numtest"
 license = "MIT OR Apache-2.0"
 
-exclude = ["Cargo.lock", ".github/", ".vscode/", ".gitignore"]
+exclude = [".github/", ".vscode/", "book/", ".gitignore", "Cargo.lock"]
+
+[package.metadata.docs.rs]
+rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
 
 [dependencies]
 num-traits = "0.2.19"
@@ -16,6 +19,3 @@ num-traits = "0.2.19"
 [dev-dependencies]
 nalgebra = "0.33.2"
 ndarray = "0.16.1"
-
-[package.metadata.docs.rs]
-rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
