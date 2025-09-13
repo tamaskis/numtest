@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+1. Update `nalgebra` dev dependency from `0.33.2` to `0.34.0`.
+
 ## 0.3.0
 
 1. Updated `rust` version to 2024.
