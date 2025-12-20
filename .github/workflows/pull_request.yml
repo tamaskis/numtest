@@ -28,7 +28,7 @@ jobs:
       - name: Test  # Test using dependencies from committed lock file.
         run: RUST_BACKTRACE=1 cargo test --locked --all-features --verbose
       - name: Lint  # Lint using Clippy.
-        run: cargo clippy --no-deps --all-features
+        run: cargo clippy --no-deps --all-targets --all-features -- -D warnings -D clippy::pedantic
       - name: Docs  # Ensure that docs can be generated for this crate.
         run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
       - name: Publishing dry run  # Ensure that this crate can be published.
