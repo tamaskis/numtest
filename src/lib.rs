@@ -94,7 +94,7 @@
 //! ```
 
 // Linter setup.
-#![warn(missing_docs)]
+#![warn(missing_docs, warnings, clippy::all, clippy::pedantic)]
 
 // Module declarations.
 pub(crate) mod assert_array;

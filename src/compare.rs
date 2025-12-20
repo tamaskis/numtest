@@ -84,7 +84,7 @@ pub trait Compare {
     /// result, we just use the 1.5 multiplier on $10^{-d}$ when checking equality to $d$ decimal
     /// places. This multiplier of 1.5 is a heuristic that serves to put looser bounds on how many
     /// decimal places two numbers are considered equal to. Since we cannot reliably obtain the
-    /// exact decimal precision, we choose to adopt this heuristic that NumPy already uses. <br>
+    /// exact decimal precision, we choose to adopt this heuristic that `NumPy` already uses. <br>
     ///
     /// # Note
     ///
@@ -223,8 +223,8 @@ pub trait Compare {
     ///
     /// # Special Cases
     ///
-    /// Unlike NumPy, we restrict the relative difference to be in the range $(0,1)$ (corresponding
-    /// to a maximum percent difference of 100%).
+    /// Unlike `NumPy`, we restrict the relative difference to be in the range $(0,1)$
+    /// (corresponding to a maximum percent difference of 100%).
     ///
     /// | Float 1 | Float 2 | Relative Difference |
     /// | ------- | ------- | ------------------- |
@@ -273,18 +273,16 @@ macro_rules! impl_compare {
                 if self.is_nan() || other.is_nan() {
                     if (self.is_nan() && other.is_nan()) {
                         return (true, self.min_10_exp().abs());
-                    } else {
-                        return (decimal == -self.max_10_exp(), -self.max_10_exp());
                     }
+                    return (decimal == -self.max_10_exp(), -self.max_10_exp());
                 }
 
                 // Edge case: Infs.
                 if self.is_infinite() || other.is_infinite() {
                     if (self.is_infinite() && other.is_infinite()) && (*self == other) {
                         return (true, self.min_10_exp().abs());
-                    } else {
-                        return (decimal == -self.max_10_exp(), -self.max_10_exp());
                     }
+                    return (decimal == -self.max_10_exp(), -self.max_10_exp());
                 }
 
                 // Determines if the two numbers are equal to the specified decimal precision.
@@ -485,7 +483,7 @@ mod tests {
 
         // f32 unequal.
         assert!(!0.0_f32.is_equal(1.0_f32));
-        assert!(!1.234567_f32.is_equal(1.234568_f32));
+        assert!(!1.234_567_f32.is_equal(1.234_568_f32));
         assert!(!f32::NAN.is_equal(0.0_f32));
         assert!(!f32::NAN.is_equal(f32::INFINITY));
 
@@ -503,7 +501,7 @@ mod tests {
 
         // f64 unequal.
         assert!(!0.0_f64.is_equal(1.0_f64));
-        assert!(!1.234567_f64.is_equal(1.234568_f64));
+        assert!(!1.234_567_f64.is_equal(1.234_568_f64));
         assert!(!f64::NAN.is_equal(0.0_f64));
         assert!(!f64::NAN.is_equal(f64::INFINITY));
     }
@@ -518,15 +516,15 @@ mod tests {
         // f64
         test_decimal(1.0_f64, 1.0_f64, 5, true, 307);
         test_atol(1.0_f64, 1.0_f64, 0.1, true, 0.0);
-        test_rtol(1.0_f64, 1.0_f64, 0.01, true, 0.0)
+        test_rtol(1.0_f64, 1.0_f64, 0.01, true, 0.0);
     }
 
     #[test]
     fn exact_equality_within_precision() {
         // f32
-        test_decimal(1.0_f32, 0.99999999, 7, true, 37);
-        test_atol(1.0_f32, 0.99999999, 1e-8, true, 0.0);
-        test_rtol(1.0_f32, 0.99999999, 1e-8, true, 0.0);
+        test_decimal(1.0_f32, 0.999_999_99, 7, true, 37);
+        test_atol(1.0_f32, 0.999_999_99, 1e-8, true, 0.0);
+        test_rtol(1.0_f32, 0.999_999_99, 1e-8, true, 0.0);
         test_decimal(1.0_f32, 1.00000001, 8, true, 37);
         test_atol(1.0_f32, 1.00000001, 1e-8, true, 0.0);
         test_rtol(1.0_f32, 1.00000001, 1e-8, true, 0.0);
