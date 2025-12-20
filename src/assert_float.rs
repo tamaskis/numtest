@@ -199,25 +199,27 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "\nValues are not exactly equal.\n --> a: 0.0\n --> b: 1.0\n")]
     fn assert_equal_should_fail_1() {
         assert_equal!(0.0, 1.0);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not exactly equal.\n --> a: 1.234567\n --> b: 1.234568\n"
+    )]
     fn assert_equal_should_fail_2() {
         assert_equal!(1.234567, 1.234568);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "\nValues are not exactly equal.\n --> a: NaN\n --> b: 0.0\n")]
     fn assert_equal_should_fail_3() {
         assert_equal!(f64::NAN, 0.0);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "\nValues are not exactly equal.\n --> a: NaN\n --> b: inf\n")]
     fn assert_equal_should_fail_4() {
         assert_equal!(f64::NAN, f64::INFINITY);
     }
@@ -230,19 +232,25 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to 8 decimal places. They ARE equal to 7 decimal places.\n --> a: 1.0\n --> b: 0.9999999\n"
+    )]
     fn assert_equal_to_decimal_should_fail_1() {
         assert_equal_to_decimal!(1.0_f32, 0.9999999, 8);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to 10 decimal places. They ARE equal to 8 decimal places.\n --> a: 1.0\n --> b: 1.00000001\n"
+    )]
     fn assert_equal_to_decimal_should_fail_2() {
         assert_equal_to_decimal!(1.0_f64, 1.00000001, 10);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to 10 decimal places. They ARE equal to 4 decimal places.\n --> a: 1234.2222\n --> b: 1234.2223\n"
+    )]
     fn assert_equal_to_decimal_should_fail_3() {
         assert_equal_to_decimal!(1234.2222_f64, 1234.2223_f64, 10);
     }
@@ -255,19 +263,25 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to within an absolute tolerance of 0.00000001. They ARE equal to within an absolute tolerance of 0.00000011920929.\n --> a: 1.0\n --> b: 0.9999999\n"
+    )]
     fn assert_equal_to_atol_should_fail_1() {
         assert_equal_to_atol!(1.0_f32, 0.9999999, 1e-8);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to within an absolute tolerance of 0.0000000001. They ARE equal to within an absolute tolerance of 0.00000000999999993922529.\n --> a: 1.0\n --> b: 1.00000001\n"
+    )]
     fn assert_equal_to_atol_should_fail_2() {
         assert_equal_to_atol!(1.0_f64, 1.00000001, 1e-10);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to within an absolute tolerance of 0.00001. They ARE equal to within an absolute tolerance of 0.00009999999997489795.\n --> a: 1234.2222\n --> b: 1234.2223\n"
+    )]
     fn assert_equal_to_atol_should_fail_3() {
         assert_equal_to_atol!(1234.2222_f64, 1234.2223_f64, 1e-5);
     }
@@ -280,19 +294,25 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to within a relative tolerance of 0.000000000000001. They ARE equal to within a relative tolerance of 0.00000011920929.\n --> a: 1.0\n --> b: 0.9999999\n"
+    )]
     fn assert_equal_to_rtol_should_fail_1() {
         assert_equal_to_rtol!(1.0_f32, 0.9999999, 1e-15);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to within a relative tolerance of 0.000000000000001. They ARE equal to within a relative tolerance of 0.000000009999999839225292.\n --> a: 1.0\n --> b: 1.00000001\n"
+    )]
     fn assert_equal_to_rtol_should_fail_2() {
         assert_equal_to_rtol!(1.0_f64, 1.00000001, 1e-15);
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nValues are not equal to within a relative tolerance of 0.000000000000001. They ARE equal to within a relative tolerance of 0.0000000810226812259817.\n --> a: 1234.2222\n --> b: 1234.2223\n"
+    )]
     fn assert_equal_to_rtol_should_fail_3() {
         assert_equal_to_rtol!(1234.2222_f64, 1234.2223_f64, 1e-15);
     }

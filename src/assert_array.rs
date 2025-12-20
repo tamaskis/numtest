@@ -56,9 +56,10 @@ macro_rules! validate_counts {
 #[macro_export]
 macro_rules! get_mismatched_elements_str {
     ($arr1:expr, $arr2:expr, $idx_mismatched:expr, $output:expr) => {
+        use std::fmt::Write;
         // Add the header.
-        $output.push_str(&format!("{:>25} {:>25}\n", "arr1", "arr2"));
-        $output.push_str(&format!("{:>25} {:>25}\n", "----", "----"));
+        let _ = write!($output, "{:>25} {:>25}\n", "arr1", "arr2");
+        let _ = write!($output, "{:>25} {:>25}\n", "----", "----");
 
         // Iterate over all elements.
         for (idx, (a, b)) in $arr1.iter().zip($arr2.iter()).enumerate() {
@@ -70,10 +71,11 @@ macro_rules! get_mismatched_elements_str {
             let reset = if is_mismatched { "\x1b[0m" } else { "" };
 
             // Append formatted output to the string.
-            $output.push_str(&format!(
+            let _ = write!(
+                $output,
                 "{}{:>25e}{} {}{:>25e}{}\n",
                 red_bold_start, a, reset, red_bold_start, b, reset
-            ));
+            );
         }
     };
 }
@@ -838,7 +840,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not exactly equal.\n --> Mismatched Elements: 1/3\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    2.2e0                     2.2e0\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_array_exact_fail() {
         let arr1: [f64; 3] = [1.1, 2.2, 3.3];
         let arr2: [f64; 3] = [1.1, 2.2, 3.33];
@@ -853,7 +857,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not exactly equal.\n --> Mismatched Elements: 1/3\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    2.2e0                     2.2e0\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_vec_exact_fail() {
         let vec1 = Vec::from([1.1, 2.2, 3.3]);
         let vec2 = Vec::from([1.1, 2.2, 3.33]);
@@ -868,7 +874,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not exactly equal.\n --> Mismatched Elements: 1/3\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    2.2e0                     2.2e0\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array1_exact_fail() {
         let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
         let arr2 = Array1::from_vec(vec![1.1, 2.2, 3.33]);
@@ -883,7 +891,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not exactly equal.\n --> Mismatched Elements: 2/6\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    2.2e0                     2.2e0\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n                    4.4e0                     4.4e0\n                    5.5e0                     5.5e0\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array2_exact_fail() {
         let arr1 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
         let arr2 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.33, 4.4, 5.5, 6.66]).unwrap();
@@ -898,7 +908,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not exactly equal.\n --> Mismatched Elements: 1/3\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    2.2e0                     2.2e0\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_vector3_exact_fail() {
         let vec1 = Vector3::new(1.1, 2.2, 3.3);
         let vec2 = Vector3::new(1.1, 2.2, 3.33);
@@ -913,7 +925,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not exactly equal.\n --> Mismatched Elements: 3/9\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    4.4e0                     4.4e0\n                    7.7e0                     7.7e0\n                    2.2e0                     2.2e0\n                    5.5e0                     5.5e0\n                    8.8e0                     8.8e0\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n\u{1b}[31;1m                    9.9e0\u{1b}[0m \u{1b}[31;1m                   9.99e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_matrix3_exact_fail() {
         let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
         let mat2 = Matrix3::new(1.1, 2.2, 3.33, 4.4, 5.5, 6.66, 7.7, 8.8, 9.99);
@@ -928,7 +942,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to 2 decimal places.\n --> Mismatched Elements: 2/3\n --> Maximum Decimal Places of Precision: 1\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_array_decimal_fail() {
         let arr1: [f64; 3] = [1.1, 2.2, 3.3];
         let arr2: [f64; 3] = [1.1, 2.22, 3.33];
@@ -943,7 +959,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to 2 decimal places.\n --> Mismatched Elements: 2/3\n --> Maximum Decimal Places of Precision: 1\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_vec_decimal_fail() {
         let vec1 = Vec::from([1.1, 2.2, 3.3]);
         let vec2 = Vec::from([1.1, 2.22, 3.33]);
@@ -958,7 +976,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to 2 decimal places.\n --> Mismatched Elements: 2/3\n --> Maximum Decimal Places of Precision: 1\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array1_decimal_fail() {
         let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
         let arr2 = Array1::from_vec(vec![1.1, 2.22, 3.33]);
@@ -973,7 +993,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to 2 decimal places.\n --> Mismatched Elements: 4/6\n --> Maximum Decimal Places of Precision: 1\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n                    4.4e0                     4.4e0\n\u{1b}[31;1m                    5.5e0\u{1b}[0m \u{1b}[31;1m                   5.55e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array2_decimal_fail() {
         let arr1 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
         let arr2 = Array2::from_shape_vec((2, 3), vec![1.1, 2.22, 3.33, 4.4, 5.55, 6.66]).unwrap();
@@ -988,7 +1010,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to 2 decimal places.\n --> Mismatched Elements: 2/3\n --> Maximum Decimal Places of Precision: 1\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_vector3_decimal_fail() {
         let vec1 = Vector3::new(1.1, 2.2, 3.3);
         let vec2 = Vector3::new(1.1, 2.22, 3.33);
@@ -1003,7 +1027,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to 2 decimal places.\n --> Mismatched Elements: 6/9\n --> Maximum Decimal Places of Precision: 1\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    4.4e0                     4.4e0\n                    7.7e0                     7.7e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    5.5e0\u{1b}[0m \u{1b}[31;1m                   5.55e0\u{1b}[0m\n\u{1b}[31;1m                    8.8e0\u{1b}[0m \u{1b}[31;1m                   8.88e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n\u{1b}[31;1m                    9.9e0\u{1b}[0m \u{1b}[31;1m                   9.99e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_matrix3_decimal_fail() {
         let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
         let mat2 = Matrix3::new(1.1, 2.22, 3.33, 4.4, 5.55, 6.66, 7.7, 8.88, 9.99);
@@ -1018,7 +1044,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to an absolute tolerance of 0.01.\n --> Mismatched Elements: 2/3\n --> Largest Absolute Difference: 0.029999971389770508\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_array_atol_fail() {
         let arr1: [f32; 3] = [1.1, 2.2, 3.3];
         let arr2: [f32; 3] = [1.1, 2.22, 3.33];
@@ -1033,7 +1061,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to an absolute tolerance of 0.01.\n --> Mismatched Elements: 2/3\n --> Largest Absolute Difference: 0.03000000000000025\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_vec_atol_fail() {
         let vec1 = Vec::from([1.1, 2.2, 3.3]);
         let vec2 = Vec::from([1.1, 2.22, 3.33]);
@@ -1048,7 +1078,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to an absolute tolerance of 0.01.\n --> Mismatched Elements: 2/3\n --> Largest Absolute Difference: 0.03000000000000025\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array1_atol_fail() {
         let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
         let arr2 = Array1::from_vec(vec![1.1, 2.22, 3.33]);
@@ -1063,7 +1095,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to an absolute tolerance of 0.01.\n --> Mismatched Elements: 4/6\n --> Largest Absolute Difference: 0.0600000000000005\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n                    4.4e0                     4.4e0\n\u{1b}[31;1m                    5.5e0\u{1b}[0m \u{1b}[31;1m                   5.55e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array2_atol_fail() {
         let arr1 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
         let arr2 = Array2::from_shape_vec((2, 3), vec![1.1, 2.22, 3.33, 4.4, 5.55, 6.66]).unwrap();
@@ -1078,7 +1112,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to an absolute tolerance of 0.01.\n --> Mismatched Elements: 2/3\n --> Largest Absolute Difference: 0.03000000000000025\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_vector3_atol_fail() {
         let vec1 = Vector3::new(1.1, 2.2, 3.3);
         let vec2 = Vector3::new(1.1, 2.22, 3.33);
@@ -1093,7 +1129,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to an absolute tolerance of 0.01.\n --> Mismatched Elements: 6/9\n --> Largest Absolute Difference: 0.08999999999999986\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    4.4e0                     4.4e0\n                    7.7e0                     7.7e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    5.5e0\u{1b}[0m \u{1b}[31;1m                   5.55e0\u{1b}[0m\n\u{1b}[31;1m                    8.8e0\u{1b}[0m \u{1b}[31;1m                   8.88e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n\u{1b}[31;1m                    9.9e0\u{1b}[0m \u{1b}[31;1m                   9.99e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_matrix3_atol_fail() {
         let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
         let mat2 = Matrix3::new(1.1, 2.22, 3.33, 4.4, 5.55, 6.66, 7.7, 8.88, 9.99);
@@ -1108,7 +1146,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to a relative tolerance of 0.001.\n --> Mismatched Elements: 2/3\n --> Largest Relative Difference: 0.009009000845253468\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_array_rtol_fail() {
         let arr1: [f32; 3] = [1.1, 2.2, 3.3];
         let arr2: [f32; 3] = [1.1, 2.22, 3.33];
@@ -1123,7 +1163,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to a relative tolerance of 0.001.\n --> Mismatched Elements: 2/3\n --> Largest Relative Difference: 0.009009009009009084\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_std_vec_rtol_fail() {
         let vec1 = Vec::from([1.1, 2.2, 3.3]);
         let vec2 = Vec::from([1.1, 2.22, 3.33]);
@@ -1138,7 +1180,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to a relative tolerance of 0.001.\n --> Mismatched Elements: 2/3\n --> Largest Relative Difference: 0.009009009009009084\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array1_rtol_fail() {
         let arr1 = Array1::from_vec(vec![1.1, 2.2, 3.3]);
         let arr2 = Array1::from_vec(vec![1.1, 2.22, 3.33]);
@@ -1153,7 +1197,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to a relative tolerance of 0.001.\n --> Mismatched Elements: 4/6\n --> Largest Relative Difference: 0.009009009009009084\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n                    4.4e0                     4.4e0\n\u{1b}[31;1m                    5.5e0\u{1b}[0m \u{1b}[31;1m                   5.55e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n"
+    )]
     fn test_ndarray_array2_rtol_fail() {
         let arr1 = Array2::from_shape_vec((2, 3), vec![1.1, 2.2, 3.3, 4.4, 5.5, 6.6]).unwrap();
         let arr2 = Array2::from_shape_vec((2, 3), vec![1.1, 2.22, 3.33, 4.4, 5.55, 6.66]).unwrap();
@@ -1168,7 +1214,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to a relative tolerance of 0.001.\n --> Mismatched Elements: 2/3\n --> Largest Relative Difference: 0.009009009009009084\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_vector3_rtol_fail() {
         let vec1 = Vector3::new(1.1, 2.2, 3.3);
         let vec2 = Vector3::new(1.1, 2.22, 3.33);
@@ -1183,7 +1231,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
+    #[should_panic(
+        expected = "\nThe two array-like structs are not equal to a relative tolerance of 0.001.\n --> Mismatched Elements: 6/9\n --> Largest Relative Difference: 0.009009009009009084\n\n                     arr1                      arr2\n                     ----                      ----\n                    1.1e0                     1.1e0\n                    4.4e0                     4.4e0\n                    7.7e0                     7.7e0\n\u{1b}[31;1m                    2.2e0\u{1b}[0m \u{1b}[31;1m                   2.22e0\u{1b}[0m\n\u{1b}[31;1m                    5.5e0\u{1b}[0m \u{1b}[31;1m                   5.55e0\u{1b}[0m\n\u{1b}[31;1m                    8.8e0\u{1b}[0m \u{1b}[31;1m                   8.88e0\u{1b}[0m\n\u{1b}[31;1m                    3.3e0\u{1b}[0m \u{1b}[31;1m                   3.33e0\u{1b}[0m\n\u{1b}[31;1m                    6.6e0\u{1b}[0m \u{1b}[31;1m                   6.66e0\u{1b}[0m\n\u{1b}[31;1m                    9.9e0\u{1b}[0m \u{1b}[31;1m                   9.99e0\u{1b}[0m\n"
+    )]
     fn test_nalgebra_matrix3_rtol_fail() {
         let mat1 = Matrix3::new(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9);
         let mat2 = Matrix3::new(1.1, 2.22, 3.33, 4.4, 5.55, 6.66, 7.7, 8.88, 9.99);

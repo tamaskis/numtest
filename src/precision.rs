@@ -40,6 +40,7 @@ pub trait Precision {
     /// # Returns
     ///
     /// Machine epsilon for the type of this floating-point variable.
+    #[must_use]
     fn epsilon(&self) -> Self;
 }
 
