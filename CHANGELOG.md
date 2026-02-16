@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+1. Updated `ndarray` dev dependency from `0.17.1` to `0.17.2`.
+
 ## 0.4.0
 
 1. Updated `nalgebra` dev dependency from `0.34.0` to `0.34.1`.
