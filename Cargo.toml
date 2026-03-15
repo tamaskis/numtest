@@ -1,9 +1,11 @@
 [package]
 name = "numtest"
-version = "0.4.1"
+version = "0.5.0"
 authors = ["Tamas Kis"]
 edition = "2024"
 description = "Unit testing for numerical methods."
+keywords = ["testing", "numerical", "mathematics", "assertions"]
+categories = ["development-tools::testing", "science", "mathematics"]
 documentation = "https://docs.rs/numtest"
 repository = "https://github.com/tamaskis/numtest"
 license = "MIT OR Apache-2.0"

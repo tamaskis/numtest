@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+1. Enabled stricter lints.
+
 ## 0.4.1
 
 1. Updated `ndarray` dev dependency from `0.17.1` to `0.17.2`.
