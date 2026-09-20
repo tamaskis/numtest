@@ -38,7 +38,7 @@ use crate::compare::Compare;
 #[macro_export]
 macro_rules! assert_equal {
     ($a:expr, $b:expr) => {{
-        let are_equal = $a.is_equal($b);
+        let are_equal = ($a).is_equal($b);
         if !are_equal {
             panic!(
                 "\nValues are not exactly equal.\n --> a: {:?}\n --> b: {:?}\n",

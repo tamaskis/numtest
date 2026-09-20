@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+1. Small bugfix.
+
 ## 0.6.0
 
 1. `num_traits::Float` is no longer required for implementing `numtest::Compare`.
