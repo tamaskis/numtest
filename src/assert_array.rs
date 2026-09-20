@@ -83,7 +83,7 @@ macro_rules! get_mismatched_elements_str {
 /// Asserts element-wise exact equality of two array-like structs.
 ///
 /// This macro iterates over the elements of the two structs and checks if each pair of elements is
-/// exactly equal using [`Compare::is_equal`]. Additionally, this macro also checks whether the two
+/// exactly equal using [`Compare::is_equal_numtest`]. Additionally, this macro also checks whether the two
 /// structs have the same number of elements.
 ///
 /// # Arguments
@@ -102,7 +102,7 @@ macro_rules! get_mismatched_elements_str {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal`] for details on how exact equality is defined.
+/// See [`Compare::is_equal_numtest`] for details on how exact equality is defined.
 ///
 /// # Warning
 ///
@@ -239,7 +239,7 @@ macro_rules! assert_arrays_equal {
         // Track the indices of mismatched elements.
         let mut idx_mismatched: Vec<usize> = Vec::new();
         for (idx, (a, b)) in $arr1.iter().zip($arr2.iter()).enumerate() {
-            let equal = a.is_equal(*b);
+            let equal = a.is_equal_numtest(*b);
             if !equal {
                 idx_mismatched.push(idx);
             }
@@ -263,7 +263,7 @@ macro_rules! assert_arrays_equal {
 /// Asserts element-wise equality of two array-like structs to within a specified decimal precision.
 ///
 /// This macro iterates over the elements of the two structs and checks if each pair of elements is
-/// equal up to the specified decimal precision using [`Compare::is_equal_to_decimal`].
+/// equal up to the specified decimal precision using [`Compare::is_equal_to_decimal_numtest`].
 /// Additionally, this macro also checks whether the two structs have the same number of elements.
 ///
 /// # Arguments
@@ -283,7 +283,7 @@ macro_rules! assert_arrays_equal {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal_to_decimal`] for details on how equality to within a specified decimal
+/// See [`Compare::is_equal_to_decimal_numtest`] for details on how equality to within a specified decimal
 /// precision is defined.
 ///
 /// # Warning
@@ -424,7 +424,7 @@ macro_rules! assert_arrays_equal_to_decimal {
         // Track the indices of mismatched elements and the smallest precision that is satisfied.
         let mut idx_mismatched: Vec<usize> = Vec::new();
         for (idx, (a, b)) in $arr1.iter().zip($arr2.iter()).enumerate() {
-            let (equal, precision) = a.is_equal_to_decimal(*b, $decimal);
+            let (equal, precision) = a.is_equal_to_decimal_numtest(*b, $decimal);
             if !equal {
                 idx_mismatched.push(idx);
             }
@@ -452,7 +452,7 @@ macro_rules! assert_arrays_equal_to_decimal {
 /// tolerance.
 ///
 /// This macro iterates over the elements of the two structs and checks if each pair of elements is
-/// equal to within the specified absolute tolerance using [`Compare::is_equal_to_atol`].
+/// equal to within the specified absolute tolerance using [`Compare::is_equal_to_atol_numtest`].
 /// Additionally, this macro also checks whether the two structs have the same number of elements.
 ///
 /// # Arguments
@@ -472,7 +472,7 @@ macro_rules! assert_arrays_equal_to_decimal {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal_to_atol`] for details on how equality to within a specified absolute
+/// See [`Compare::is_equal_to_atol_numtest`] for details on how equality to within a specified absolute
 /// tolerance is defined.
 ///
 /// # Warning
@@ -613,7 +613,7 @@ macro_rules! assert_arrays_equal_to_atol {
         // Track the indices of mismatched elements and the larget absolute difference.
         let mut idx_mismatched: Vec<usize> = Vec::new();
         for (idx, (a, b)) in $arr1.iter().zip($arr2.iter()).enumerate() {
-            let (equal, abs_diff) = a.is_equal_to_atol(*b, $atol);
+            let (equal, abs_diff) = a.is_equal_to_atol_numtest(*b, $atol);
             if !equal {
                 idx_mismatched.push(idx);
             }
@@ -641,7 +641,7 @@ macro_rules! assert_arrays_equal_to_atol {
 /// tolerance.
 ///
 /// This macro iterates over the elements of the two structs and checks if each pair of elements is
-/// equal to within the specified relative tolerance using the [`Compare::is_equal_to_rtol`].
+/// equal to within the specified relative tolerance using the [`Compare::is_equal_to_rtol_numtest`].
 /// Additionally, this macro also checks whether the two structs have the same number of elements.
 ///
 /// # Arguments
@@ -661,7 +661,7 @@ macro_rules! assert_arrays_equal_to_atol {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal_to_rtol`] for details on how equality to within a specified relative
+/// See [`Compare::is_equal_to_rtol_numtest`] for details on how equality to within a specified relative
 /// tolerance is defined.
 ///
 /// # Warning
@@ -802,7 +802,7 @@ macro_rules! assert_arrays_equal_to_rtol {
         // Track the indices of mismatched elements and the larget relative difference.
         let mut idx_mismatched: Vec<usize> = Vec::new();
         for (idx, (a, b)) in $arr1.iter().zip($arr2.iter()).enumerate() {
-            let (equal, rel_diff) = a.is_equal_to_rtol(*b, $rtol);
+            let (equal, rel_diff) = a.is_equal_to_rtol_numtest(*b, $rtol);
             if !equal {
                 idx_mismatched.push(idx);
             }

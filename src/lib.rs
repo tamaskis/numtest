@@ -26,16 +26,10 @@
 //!     * [`assert_arrays_equal_to_rtol`]
 //!
 //! 1. The [`Compare`] trait[^compare_note] (implemented for [`f32`] and [`f64`] types) for
-//!    performing comparisons between floating-point numbers.
-//! 1. The [`Precision`] trait[^precision_note] (implemented for [`f32`] and [`f64`] types)
-//!    providing methods for accessing information regarding the precision of an _instance_ of a
-//!    floating-point type.
+//!    performing comparisons and accessing precision information for floating-point numbers.
 //!
 //! [^compare_note]: The methods implemented on this trait are used by the assertion macros for
 //! performing float comparisons.
-//!
-//! [^precision_note]: Some of the methods implemented on this trait are used by the methods on the
-//! [`Compare`] trait.
 //!
 //! # Equality assertions for floats
 //!
@@ -101,8 +95,6 @@
 pub(crate) mod assert_array;
 pub(crate) mod assert_float;
 pub(crate) mod compare;
-pub(crate) mod precision;
 
 // Re-exports.
 pub use crate::compare::Compare;
-pub use crate::precision::Precision;

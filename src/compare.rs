@@ -1,7 +1,56 @@
-use crate::precision::Precision;
+use std::fmt::Debug;
 
 /// Trait for comparing floating-point numbers.
-pub trait Compare {
+pub trait Compare: Copy + Debug + PartialEq {
+    /// A NaN value of this floating-point type.
+    const NAN: Self;
+
+    /// Maximum number of guaranteed correct decimal places for this floating-point type.
+    const MAX_DECIMAL_NUMTEST: u32;
+
+    /// Returns the maximum number of guaranteed correct decimal places.
+    fn max_decimal_numtest(&self) -> u32;
+
+    /// Returns the maximum power-of-ten exponent for this floating-point type.
+    fn max_10_exp_numtest(&self) -> i32;
+
+    /// Returns the minimum power-of-ten exponent for this floating-point type.
+    fn min_10_exp_numtest(&self) -> i32;
+
+    /// Returns the machine epsilon for this floating-point type.
+    #[must_use]
+    fn epsilon_numtest(&self) -> Self;
+
+    /// Determines if a floating-point number is NaN.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use numtest::Compare;
+    ///
+    /// assert!(f64::NAN.is_nan_numtest());
+    /// ```
+    fn is_nan_numtest(&self) -> bool;
+
+    /// Determines if a floating-point number is infinite.
+    fn is_infinite_numtest(&self) -> bool;
+
+    /// Returns the absolute value of a floating-point number.
+    #[must_use]
+    fn abs_numtest(self) -> Self;
+
+    /// Raises a floating-point number to an integer power.
+    #[must_use]
+    fn powi_numtest(self, exponent: i32) -> Self;
+
+    /// Returns a number with the magnitude of `self` and the sign of `self`.
+    #[must_use]
+    fn signum_numtest(self) -> Self;
+
+    /// Returns the greater of two floating-point numbers.
+    #[must_use]
+    fn max_numtest(self, other: Self) -> Self;
+
     /// Determines if a floating-point number is exactly equal to another.
     ///
     /// # Arguments
@@ -26,9 +75,9 @@ pub trait Compare {
     /// ```
     /// use numtest::Compare;
     ///
-    /// assert!(123.45678.is_equal(123.45678));
+    /// assert!(123.45678.is_equal_numtest(123.45678));
     /// ```
-    fn is_equal(&self, other: Self) -> bool;
+    fn is_equal_numtest(&self, other: Self) -> bool;
 
     /// Determines if a floating-point number is equal to another within the specified decimal
     /// precision.
@@ -50,12 +99,12 @@ pub trait Compare {
     /// use numtest::Compare;
     ///
     /// // Positive decimal precision.
-    /// let (result, actual_decimal) = 123.45678.is_equal_to_decimal(123.45891, 2);
+    /// let (result, actual_decimal) = 123.45678.is_equal_to_decimal_numtest(123.45891, 2);
     /// assert!(result);
     /// assert_eq!(actual_decimal, 2);
     ///
     /// // Negative decimal precision.
-    /// let (result, actual_decimal) = 1200.0.is_equal_to_decimal(1300.0, 2);
+    /// let (result, actual_decimal) = 1200.0.is_equal_to_decimal_numtest(1300.0, 2);
     /// assert!(!result);
     /// assert_eq!(actual_decimal, -2);
     /// ```
@@ -92,7 +141,7 @@ pub trait Compare {
     /// ```
     /// use numtest::Compare;
     ///
-    /// let (result, decimal) = 12345_f64.is_equal_to_decimal(12340_f64, -1);
+    /// let (result, decimal) = 12345_f64.is_equal_to_decimal_numtest(12340_f64, -1);
     /// assert!(result);
     /// assert_eq!(decimal, -1);
     /// ```
@@ -118,7 +167,7 @@ pub trait Compare {
     /// ```
     /// use numtest::Compare;
     ///
-    /// let (result, decimal) = f64::NAN.is_equal_to_decimal(f64::NAN, 15);
+    /// let (result, decimal) = f64::NAN.is_equal_to_decimal_numtest(f64::NAN, 15);
     /// assert!(result);
     /// assert_eq!(decimal, 307);
     /// ```
@@ -128,14 +177,14 @@ pub trait Compare {
     /// ```
     /// use numtest::Compare;
     ///
-    /// let (result, decimal) = f64::NAN.is_equal_to_decimal(-f64::NAN, 15);
+    /// let (result, decimal) = f64::NAN.is_equal_to_decimal_numtest(-f64::NAN, 15);
     /// assert!(result);
     /// assert_eq!(decimal, 307);
     /// ```
     ///
     /// Note that [NumPy](https://numpy.org/doc/stable/reference/generated/numpy.testing.assert_almost_equal.html)
     /// makes the same assumptions.
-    fn is_equal_to_decimal(&self, other: Self, decimal: i32) -> (bool, i32);
+    fn is_equal_to_decimal_numtest(&self, other: Self, decimal: i32) -> (bool, i32);
 
     /// Determines if a floating-point number is equal to another within the specified absolute
     /// tolerance.
@@ -180,11 +229,11 @@ pub trait Compare {
     /// ```
     /// use numtest::Compare;
     ///
-    /// let (result, abs_diff) = 123.45678.is_equal_to_atol(123.45891, 0.1);
+    /// let (result, abs_diff) = 123.45678.is_equal_to_atol_numtest(123.45891, 0.1);
     /// assert!(result);
     /// assert_eq!(abs_diff, 0.002130000000008181);
     /// ```
-    fn is_equal_to_atol(&self, other: Self, atol: Self) -> (bool, Self);
+    fn is_equal_to_atol_numtest(&self, other: Self, atol: Self) -> (bool, Self);
 
     /// Determines if a floating-point number is equal to another within the specified relative
     /// tolerance.
@@ -207,8 +256,8 @@ pub trait Compare {
     ///
     /// $$\text{relative difference} = \frac{\|a-b\|}{\mathrm{max}(\|a\|,\|b\|)}$$
     ///
-    /// The use of a maximum in the denominator is used to (a) ensure that `a.is_equal_to_rtol(b)`
-    /// and `b.is_equal_to_rtol(a)` return identical results, and (b) to ensure conservatism.
+    /// The use of a maximum in the denominator is used to (a) ensure that `a.is_equal_to_rtol_numtest(b)`
+    /// and `b.is_equal_to_rtol_numtest(a)` return identical results, and (b) to ensure conservatism.
     ///
     /// This method performs the comparison
     ///
@@ -236,126 +285,179 @@ pub trait Compare {
     /// ```
     /// use numtest::Compare;
     ///
-    /// let (result, rel_diff) = 123.45678.is_equal_to_rtol(123.45891, 1e-3);
+    /// let (result, rel_diff) = 123.45678.is_equal_to_rtol_numtest(123.45891, 1e-3);
     /// assert!(result);
     /// assert_eq!(rel_diff, 1.7252703753890107e-5);
     /// ```
-    fn is_equal_to_rtol(&self, other: Self, rtol: Self) -> (bool, Self);
+    fn is_equal_to_rtol_numtest(&self, other: Self, rtol: Self) -> (bool, Self);
 }
 
 // Implementing Compare trait for f32's and f64's.
 macro_rules! impl_compare {
-    ($t:ty) => {
+    ($t:ty, $max_decimal:expr) => {
         impl Compare for $t {
-            // Implements the is_equal method.
-            fn is_equal(&self, other: Self) -> bool {
+            const NAN: Self = <$t>::NAN;
+            const MAX_DECIMAL_NUMTEST: u32 = $max_decimal;
+
+            fn max_decimal_numtest(&self) -> u32 {
+                Self::MAX_DECIMAL_NUMTEST
+            }
+
+            fn max_10_exp_numtest(&self) -> i32 {
+                <$t>::MAX_10_EXP
+            }
+
+            fn min_10_exp_numtest(&self) -> i32 {
+                <$t>::MIN_10_EXP
+            }
+
+            fn epsilon_numtest(&self) -> Self {
+                <$t>::EPSILON
+            }
+
+            // Implements the is_nan_numtest method.
+            fn is_nan_numtest(&self) -> bool {
+                (*self).is_nan()
+            }
+
+            fn is_infinite_numtest(&self) -> bool {
+                <$t>::is_infinite(*self)
+            }
+
+            fn abs_numtest(self) -> Self {
+                <$t>::abs(self)
+            }
+
+            fn powi_numtest(self, exponent: i32) -> Self {
+                <$t>::powi(self, exponent)
+            }
+
+            fn signum_numtest(self) -> Self {
+                <$t>::signum(self)
+            }
+
+            fn max_numtest(self, other: Self) -> Self {
+                <$t>::max(self, other)
+            }
+
+            // Implements the is_equal_numtest method.
+            fn is_equal_numtest(&self, other: Self) -> bool {
                 // Edge case: NaNs.
-                if self.is_nan() || other.is_nan() {
-                    return self.is_nan() && other.is_nan();
+                if self.is_nan_numtest() || other.is_nan_numtest() {
+                    return self.is_nan_numtest() && other.is_nan_numtest();
                 }
 
                 // Standard case.
                 *self == other
             }
 
-            // Implements the is_equal_to_decimal method.
-            fn is_equal_to_decimal(&self, other: Self, decimal: i32) -> (bool, i32) {
+            // Implements the is_equal_to_decimal_numtest method.
+            fn is_equal_to_decimal_numtest(&self, other: Self, decimal: i32) -> (bool, i32) {
                 // Edge case: NaNs.
-                if self.is_nan() || other.is_nan() {
-                    if (self.is_nan() && other.is_nan()) {
-                        return (true, self.min_10_exp().abs());
+                if self.is_nan_numtest() || other.is_nan_numtest() {
+                    if self.is_nan_numtest() && other.is_nan_numtest() {
+                        return (true, self.min_10_exp_numtest().abs());
                     }
-                    return (decimal == -self.max_10_exp(), -self.max_10_exp());
+                    return (
+                        decimal == -self.max_10_exp_numtest(),
+                        -self.max_10_exp_numtest(),
+                    );
                 }
 
                 // Edge case: Infs.
-                if self.is_infinite() || other.is_infinite() {
-                    if (self.is_infinite() && other.is_infinite()) && (*self == other) {
-                        return (true, self.min_10_exp().abs());
+                if self.is_infinite_numtest() || other.is_infinite_numtest() {
+                    if (self.is_infinite_numtest() && other.is_infinite_numtest())
+                        && (*self == other)
+                    {
+                        return (true, self.min_10_exp_numtest().abs());
                     }
-                    return (decimal == -self.max_10_exp(), -self.max_10_exp());
+                    return (
+                        decimal == -self.max_10_exp_numtest(),
+                        -self.max_10_exp_numtest(),
+                    );
                 }
 
                 // Determines if the two numbers are equal to the specified decimal precision.
-                let result = (self - other).abs() <= 1.5 * (10.0 as Self).powi(-decimal);
+                let result = (self - other).abs_numtest()
+                    <= (1.5 as Self) * (10.0 as Self).powi_numtest(-decimal);
 
                 // Determines the actual decimal precision between the two numbers.
                 let mut actual_decimal = decimal;
                 let mut new_result = result;
                 if result {
-                    while new_result && actual_decimal < self.min_10_exp().abs() {
+                    while new_result && actual_decimal < self.min_10_exp_numtest().abs() {
                         actual_decimal += 1;
-                        new_result =
-                            (self - other).abs() <= 1.5 * (10.0 as Self).powi(-actual_decimal);
+                        new_result = (self - other).abs_numtest()
+                            <= (1.5 as Self) * (10.0 as Self).powi_numtest(-actual_decimal);
                     }
-                    if actual_decimal < self.min_10_exp().abs() {
+                    if actual_decimal < self.min_10_exp_numtest().abs() {
                         actual_decimal -= 1;
                     }
                 } else {
-                    while !new_result && actual_decimal > -self.max_10_exp() {
+                    while !new_result && actual_decimal > -self.max_10_exp_numtest() {
                         actual_decimal -= 1;
-                        new_result =
-                            (self - other).abs() <= 1.5 * (10.0 as Self).powi(-actual_decimal);
+                        new_result = (self - other).abs_numtest()
+                            <= (1.5 as Self) * (10.0 as Self).powi_numtest(-actual_decimal);
                     }
                 }
                 (result, actual_decimal)
             }
 
-            // Implements the is_equal_to_atol method.
-            fn is_equal_to_atol(&self, other: Self, atol: Self) -> (bool, Self) {
+            // Implements the is_equal_to_atol_numtest method.
+            fn is_equal_to_atol_numtest(&self, other: Self, atol: Self) -> (bool, Self) {
                 // Edge case: both are NaNs.
-                if self.is_nan() && other.is_nan() {
+                if self.is_nan_numtest() && other.is_nan_numtest() {
                     (true, 0.0)
                 }
                 // Edge case: only one is NaN.
-                else if self.is_nan() || other.is_nan() {
-                    (atol.is_nan(), Self::NAN)
+                else if self.is_nan_numtest() || other.is_nan_numtest() {
+                    (atol.is_nan_numtest(), Self::NAN)
                 }
                 // Edge case: Infs of same sign.
-                else if self.is_infinite()
-                    && other.is_infinite()
-                    && self.signum() == other.signum()
+                else if self.is_infinite_numtest()
+                    && other.is_infinite_numtest()
+                    && self.signum_numtest() == other.signum_numtest()
                 {
                     (true, 0.0)
                 }
                 // Standard case.
                 else {
-                    let abs_diff = (self - other).abs();
+                    let abs_diff = (self - other).abs_numtest();
                     let result = abs_diff <= atol;
                     (result, abs_diff)
                 }
             }
 
-            // Implements the is_equal_to_rtol method.
-            fn is_equal_to_rtol(&self, other: Self, rtol: Self) -> (bool, Self) {
+            // Implements the is_equal_to_rtol_numtest method.
+            fn is_equal_to_rtol_numtest(&self, other: Self, rtol: Self) -> (bool, Self) {
                 // Edge case: both are 0.
                 if (*self == 0.0) && (other == 0.0) {
                     (true, 0.0)
                 }
                 // Edge case: both are NaNs.
-                else if self.is_nan() && other.is_nan() {
+                else if self.is_nan_numtest() && other.is_nan_numtest() {
                     (true, 0.0)
                 }
                 // Edge case: both are Infs.
-                else if self.is_infinite() && other.is_infinite() {
-                    if self.signum() == other.signum() {
+                else if self.is_infinite_numtest() && other.is_infinite_numtest() {
+                    if self.signum_numtest() == other.signum_numtest() {
                         (true, 0.0)
                     } else {
                         (rtol == 1.0, 1.0)
                     }
                 }
                 // Edge case: only one is NaN.
-                else if self.is_nan() || other.is_nan() {
+                else if self.is_nan_numtest() || other.is_nan_numtest() {
                     (rtol == 1.0, 1.0)
                 }
                 // Edge case: only one is Inf.
-                else if self.is_infinite() || other.is_infinite() {
+                else if self.is_infinite_numtest() || other.is_infinite_numtest() {
                     (rtol == 1.0, 1.0)
                 }
                 // Standard case.
                 else {
-                    let abs_diff = (self - other).abs();
-                    let max = self.abs().max(other.abs());
+                    let abs_diff = (self - other).abs_numtest();
+                    let max = self.abs_numtest().max_numtest(other.abs_numtest());
                     let result = abs_diff <= rtol * max;
                     (result, abs_diff / max)
                 }
@@ -363,15 +465,14 @@ macro_rules! impl_compare {
         }
     };
 }
-impl_compare!(f32);
-impl_compare!(f64);
+impl_compare!(f32, 7);
+impl_compare!(f64, 15);
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use num_traits::Float;
 
-    /// Function used for testing the `is_equal_to_decimal` method.
+    /// Function used for testing the `is_equal_to_decimal_numtest` method.
     ///
     /// # Arguments
     ///
@@ -382,10 +483,10 @@ mod tests {
     /// * `exp_actual_decimal` - The expected actual decimal precision.
     fn test_decimal<T>(a: T, b: T, decimal: i32, exp_result: bool, exp_actual_decimal: i32)
     where
-        T: Compare + Float,
+        T: Compare,
     {
-        // Run is_equal_to_decimal() method.
-        let (result, actual_decimal) = a.is_equal_to_decimal(b, decimal);
+        // Run is_equal_to_decimal_numtest() method.
+        let (result, actual_decimal) = a.is_equal_to_decimal_numtest(b, decimal);
 
         // Check that the expected result was obtained (true if equal to expected number of decimal
         // places, false otherwise).
@@ -399,7 +500,7 @@ mod tests {
         assert_eq!(actual_decimal, exp_actual_decimal);
     }
 
-    /// Function used for testing the `is_equal_to_atol` method.
+    /// Function used for testing the `is_equal_to_atol_numtest` method.
     ///
     /// # Arguments
     ///
@@ -410,10 +511,10 @@ mod tests {
     /// * `exp_abs_diff` - The expected absolute difference.
     fn test_atol<T>(a: T, b: T, atol: T, exp_result: bool, exp_abs_diff: T)
     where
-        T: Compare + Float + std::fmt::Debug,
+        T: Compare,
     {
-        // Run is_equal_to_atol() method.
-        let (result, abs_diff) = a.is_equal_to_atol(b, atol);
+        // Run is_equal_to_atol_numtest() method.
+        let (result, abs_diff) = a.is_equal_to_atol_numtest(b, atol);
 
         // Check that the expected result was obtained.
         if exp_result {
@@ -423,14 +524,14 @@ mod tests {
         }
 
         // Check that the absolute difference matches the expected value.
-        if exp_abs_diff.is_nan() {
-            assert!(abs_diff.is_nan());
+        if exp_abs_diff.is_nan_numtest() {
+            assert!(abs_diff.is_nan_numtest());
         } else {
             assert_eq!(abs_diff, exp_abs_diff);
         }
     }
 
-    /// Function used for testing the `is_equal_to_rtol` method.
+    /// Function used for testing the `is_equal_to_rtol_numtest` method.
     ///
     /// # Arguments
     ///
@@ -441,10 +542,10 @@ mod tests {
     /// * `exp_rel_diff` - The expected relative difference.
     fn test_rtol<T>(a: T, b: T, rtol: T, exp_result: bool, exp_rel_diff: T)
     where
-        T: Compare + Float + std::fmt::Debug,
+        T: Compare,
     {
-        // Run is_equal_to_rtol() method.
-        let (result, rel_diff) = a.is_equal_to_rtol(b, rtol);
+        // Run is_equal_to_rtol_numtest() method.
+        let (result, rel_diff) = a.is_equal_to_rtol_numtest(b, rtol);
 
         // Check that the expected result was obtained.
         if exp_result {
@@ -454,50 +555,91 @@ mod tests {
         }
 
         // Check that the relative difference matches the expected value.
-        if exp_rel_diff.is_nan() {
-            assert!(rel_diff.is_nan());
+        if exp_rel_diff.is_nan_numtest() {
+            assert!(rel_diff.is_nan_numtest());
         } else {
             assert_eq!(rel_diff, exp_rel_diff);
         }
     }
 
+    fn float_capabilities<T>(value: T, other: T) -> (bool, bool, T, T, T, T, u32, i32, i32, T)
+    where
+        T: Compare,
+    {
+        (
+            T::NAN.is_nan_numtest(),
+            value.is_infinite_numtest(),
+            value.abs_numtest(),
+            value.powi_numtest(2),
+            value.signum_numtest(),
+            value.max_numtest(other),
+            value.max_decimal_numtest(),
+            value.max_10_exp_numtest(),
+            value.min_10_exp_numtest(),
+            value.epsilon_numtest(),
+        )
+    }
+
     #[test]
-    fn is_equal() {
+    fn generic_float_capabilities() {
+        assert_eq!(
+            float_capabilities(-2.0_f32, 3.0_f32),
+            (true, false, 2.0, 4.0, -1.0, 3.0, 7, 38, -37, f32::EPSILON),
+        );
+        assert_eq!(
+            float_capabilities(-2.0_f64, 3.0_f64),
+            (
+                true,
+                false,
+                2.0,
+                4.0,
+                -1.0,
+                3.0,
+                15,
+                308,
+                -307,
+                f64::EPSILON
+            ),
+        );
+    }
+
+    #[test]
+    fn is_equal_numtest() {
         // f32 equal.
-        assert!(0.0_f32.is_equal(0.0_f32));
-        assert!(1.0_f32.is_equal(1.0_f32));
-        assert!(1.1234_f32.is_equal(1.1234_f32));
-        assert!((-1.0_f32).is_equal(-1.0_f32));
-        assert!(f32::NAN.is_equal(f32::NAN));
-        assert!((-f32::NAN).is_equal(f32::NAN));
-        assert!((-f32::NAN).is_equal(-f32::NAN));
-        assert!(f32::INFINITY.is_equal(f32::INFINITY));
-        assert!(f32::NEG_INFINITY.is_equal(f32::NEG_INFINITY));
-        assert!((-f32::INFINITY).is_equal(f32::NEG_INFINITY));
+        assert!(0.0_f32.is_equal_numtest(0.0_f32));
+        assert!(1.0_f32.is_equal_numtest(1.0_f32));
+        assert!(1.1234_f32.is_equal_numtest(1.1234_f32));
+        assert!((-1.0_f32).is_equal_numtest(-1.0_f32));
+        assert!(f32::NAN.is_equal_numtest(f32::NAN));
+        assert!((-f32::NAN).is_equal_numtest(f32::NAN));
+        assert!((-f32::NAN).is_equal_numtest(-f32::NAN));
+        assert!(f32::INFINITY.is_equal_numtest(f32::INFINITY));
+        assert!(f32::NEG_INFINITY.is_equal_numtest(f32::NEG_INFINITY));
+        assert!((-f32::INFINITY).is_equal_numtest(f32::NEG_INFINITY));
 
         // f32 unequal.
-        assert!(!0.0_f32.is_equal(1.0_f32));
-        assert!(!1.234_567_f32.is_equal(1.234_568_f32));
-        assert!(!f32::NAN.is_equal(0.0_f32));
-        assert!(!f32::NAN.is_equal(f32::INFINITY));
+        assert!(!0.0_f32.is_equal_numtest(1.0_f32));
+        assert!(!1.234_567_f32.is_equal_numtest(1.234_568_f32));
+        assert!(!f32::NAN.is_equal_numtest(0.0_f32));
+        assert!(!f32::NAN.is_equal_numtest(f32::INFINITY));
 
         // f64 equal.
-        assert!(0.0_f64.is_equal(0.0_f64));
-        assert!(1.0_f64.is_equal(1.0_f64));
-        assert!(1.1234_f64.is_equal(1.1234_f64));
-        assert!((-1.0_f64).is_equal(-1.0_f64));
-        assert!(f64::NAN.is_equal(f64::NAN));
-        assert!((-f64::NAN).is_equal(f64::NAN));
-        assert!((-f64::NAN).is_equal(-f64::NAN));
-        assert!(f64::INFINITY.is_equal(f64::INFINITY));
-        assert!(f64::NEG_INFINITY.is_equal(f64::NEG_INFINITY));
-        assert!((-f64::INFINITY).is_equal(f64::NEG_INFINITY));
+        assert!(0.0_f64.is_equal_numtest(0.0_f64));
+        assert!(1.0_f64.is_equal_numtest(1.0_f64));
+        assert!(1.1234_f64.is_equal_numtest(1.1234_f64));
+        assert!((-1.0_f64).is_equal_numtest(-1.0_f64));
+        assert!(f64::NAN.is_equal_numtest(f64::NAN));
+        assert!((-f64::NAN).is_equal_numtest(f64::NAN));
+        assert!((-f64::NAN).is_equal_numtest(-f64::NAN));
+        assert!(f64::INFINITY.is_equal_numtest(f64::INFINITY));
+        assert!(f64::NEG_INFINITY.is_equal_numtest(f64::NEG_INFINITY));
+        assert!((-f64::INFINITY).is_equal_numtest(f64::NEG_INFINITY));
 
         // f64 unequal.
-        assert!(!0.0_f64.is_equal(1.0_f64));
-        assert!(!1.234_567_f64.is_equal(1.234_568_f64));
-        assert!(!f64::NAN.is_equal(0.0_f64));
-        assert!(!f64::NAN.is_equal(f64::INFINITY));
+        assert!(!0.0_f64.is_equal_numtest(1.0_f64));
+        assert!(!1.234_567_f64.is_equal_numtest(1.234_568_f64));
+        assert!(!f64::NAN.is_equal_numtest(0.0_f64));
+        assert!(!f64::NAN.is_equal_numtest(f64::INFINITY));
     }
 
     #[test]

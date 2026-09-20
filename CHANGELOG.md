@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+1. Combined the `Precision` trait into the `Compare` trait, after which the `Precision` trait was removed.
+1. Removed `num_traits` dev dependency.
+1. Added additional methods to `Compare` trait that would lead to more robust method resolution in downstream crates.
+
 ## 0.6.1
 
 1. Small bugfix.
