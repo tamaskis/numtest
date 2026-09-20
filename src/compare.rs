@@ -1,5 +1,4 @@
 use crate::precision::Precision;
-use num_traits::Float;
 
 /// Trait for comparing floating-point numbers.
 pub trait Compare {
@@ -29,9 +28,7 @@ pub trait Compare {
     ///
     /// assert!(123.45678.is_equal(123.45678));
     /// ```
-    fn is_equal(&self, other: Self) -> bool
-    where
-        Self: Float;
+    fn is_equal(&self, other: Self) -> bool;
 
     /// Determines if a floating-point number is equal to another within the specified decimal
     /// precision.
@@ -138,9 +135,7 @@ pub trait Compare {
     ///
     /// Note that [NumPy](https://numpy.org/doc/stable/reference/generated/numpy.testing.assert_almost_equal.html)
     /// makes the same assumptions.
-    fn is_equal_to_decimal(&self, other: Self, decimal: i32) -> (bool, i32)
-    where
-        Self: Float;
+    fn is_equal_to_decimal(&self, other: Self, decimal: i32) -> (bool, i32);
 
     /// Determines if a floating-point number is equal to another within the specified absolute
     /// tolerance.
@@ -189,9 +184,7 @@ pub trait Compare {
     /// assert!(result);
     /// assert_eq!(abs_diff, 0.002130000000008181);
     /// ```
-    fn is_equal_to_atol(&self, other: Self, atol: Self) -> (bool, Self)
-    where
-        Self: Float;
+    fn is_equal_to_atol(&self, other: Self, atol: Self) -> (bool, Self);
 
     /// Determines if a floating-point number is equal to another within the specified relative
     /// tolerance.
@@ -247,9 +240,7 @@ pub trait Compare {
     /// assert!(result);
     /// assert_eq!(rel_diff, 1.7252703753890107e-5);
     /// ```
-    fn is_equal_to_rtol(&self, other: Self, rtol: Self) -> (bool, Self)
-    where
-        Self: Float;
+    fn is_equal_to_rtol(&self, other: Self, rtol: Self) -> (bool, Self);
 }
 
 // Implementing Compare trait for f32's and f64's.
@@ -286,7 +277,7 @@ macro_rules! impl_compare {
                 }
 
                 // Determines if the two numbers are equal to the specified decimal precision.
-                let result = (self - other).abs() <= 1.5 * 10.0.powi(-decimal);
+                let result = (self - other).abs() <= 1.5 * (10.0 as Self).powi(-decimal);
 
                 // Determines the actual decimal precision between the two numbers.
                 let mut actual_decimal = decimal;
@@ -294,7 +285,8 @@ macro_rules! impl_compare {
                 if result {
                     while new_result && actual_decimal < self.min_10_exp().abs() {
                         actual_decimal += 1;
-                        new_result = (self - other).abs() <= 1.5 * 10.0.powi(-actual_decimal);
+                        new_result =
+                            (self - other).abs() <= 1.5 * (10.0 as Self).powi(-actual_decimal);
                     }
                     if actual_decimal < self.min_10_exp().abs() {
                         actual_decimal -= 1;
@@ -302,7 +294,8 @@ macro_rules! impl_compare {
                 } else {
                     while !new_result && actual_decimal > -self.max_10_exp() {
                         actual_decimal -= 1;
-                        new_result = (self - other).abs() <= 1.5 * 10.0.powi(-actual_decimal);
+                        new_result =
+                            (self - other).abs() <= 1.5 * (10.0 as Self).powi(-actual_decimal);
                     }
                 }
                 (result, actual_decimal)
@@ -376,6 +369,7 @@ impl_compare!(f64);
 #[cfg(test)]
 mod tests {
     use super::*;
+    use num_traits::Float;
 
     /// Function used for testing the `is_equal_to_decimal` method.
     ///

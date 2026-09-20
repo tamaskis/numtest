@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0
+
+1. `num_traits::Float` is no longer required for implementing `numtest::Compare`.
+1. Converted `num_traits` from a required dependency to a dev dependency.
+1. Updated `nalgebra` dev dependency from `0.34.1` to `0.35.0`.
+
 ## 0.5.0
 
 1. Enabled stricter lints.
