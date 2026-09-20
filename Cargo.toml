@@ -1,6 +1,6 @@
 [package]
 name = "numtest"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["Tamas Kis"]
 edition = "2024"
 description = "Unit testing for numerical methods."
@@ -15,9 +15,7 @@ exclude = [".github/", ".vscode/", "book/", ".gitignore", "Cargo.lock"]
 [package.metadata.docs.rs]
 rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
 
-[dependencies]
-num-traits = "0.2.19"
-
 [dev-dependencies]
-nalgebra = "0.34.1"
+nalgebra = "0.35.0"
 ndarray = "0.17.2"
+num-traits = "0.2.19"
