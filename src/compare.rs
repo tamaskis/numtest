@@ -277,7 +277,7 @@ macro_rules! impl_compare {
                 }
 
                 // Determines if the two numbers are equal to the specified decimal precision.
-                let result = (self - other).abs() <= 1.5 * Self::from(10.0).powi(-decimal);
+                let result = (self - other).abs() <= 1.5 * (10.0 as Self).powi(-decimal);
 
                 // Determines the actual decimal precision between the two numbers.
                 let mut actual_decimal = decimal;
@@ -286,7 +286,7 @@ macro_rules! impl_compare {
                     while new_result && actual_decimal < self.min_10_exp().abs() {
                         actual_decimal += 1;
                         new_result =
-                            (self - other).abs() <= 1.5 * Self::from(10.0).powi(-actual_decimal);
+                            (self - other).abs() <= 1.5 * (10.0 as Self).powi(-actual_decimal);
                     }
                     if actual_decimal < self.min_10_exp().abs() {
                         actual_decimal -= 1;
@@ -295,7 +295,7 @@ macro_rules! impl_compare {
                     while !new_result && actual_decimal > -self.max_10_exp() {
                         actual_decimal -= 1;
                         new_result =
-                            (self - other).abs() <= 1.5 * Self::from(10.0).powi(-actual_decimal);
+                            (self - other).abs() <= 1.5 * (10.0 as Self).powi(-actual_decimal);
                     }
                 }
                 (result, actual_decimal)
