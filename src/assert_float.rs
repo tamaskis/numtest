@@ -14,7 +14,7 @@ use crate::compare::Compare;
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal`] for details on how exact equality is defined.
+/// See [`Compare::is_equal_numtest`] for details on how exact equality is defined.
 ///
 /// # Examples
 ///
@@ -38,7 +38,7 @@ use crate::compare::Compare;
 #[macro_export]
 macro_rules! assert_equal {
     ($a:expr, $b:expr) => {{
-        let are_equal = ($a).is_equal($b);
+        let are_equal = ($a).is_equal_numtest($b);
         if !are_equal {
             panic!(
                 "\nValues are not exactly equal.\n --> a: {:?}\n --> b: {:?}\n",
@@ -62,7 +62,7 @@ macro_rules! assert_equal {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal_to_decimal`] for details on how equality to within a specified decimal
+/// See [`Compare::is_equal_to_decimal_numtest`] for details on how equality to within a specified decimal
 /// precision is defined.
 ///
 /// # Examples
@@ -81,7 +81,7 @@ macro_rules! assert_equal {
 #[macro_export]
 macro_rules! assert_equal_to_decimal {
     ($a:expr, $b:expr, $decimal:expr) => {{
-        let (are_equal, actual_decimal) = $a.is_equal_to_decimal($b, $decimal);
+        let (are_equal, actual_decimal) = $a.is_equal_to_decimal_numtest($b, $decimal);
         if !are_equal {
             panic!(
                 "\nValues are not equal to {} decimal places. They ARE equal to {} decimal places.\
@@ -106,7 +106,7 @@ macro_rules! assert_equal_to_decimal {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal_to_atol`] for details on how equality to within a specified absolute
+/// See [`Compare::is_equal_to_atol_numtest`] for details on how equality to within a specified absolute
 /// tolerance is defined.
 ///
 /// # Examples
@@ -125,7 +125,7 @@ macro_rules! assert_equal_to_decimal {
 #[macro_export]
 macro_rules! assert_equal_to_atol {
     ($a:expr, $b:expr, $atol:expr) => {{
-        let (are_equal, abs_diff) = $a.is_equal_to_atol($b, $atol);
+        let (are_equal, abs_diff) = $a.is_equal_to_atol_numtest($b, $atol);
         if !are_equal {
             panic!(
                 "\nValues are not equal to within an absolute tolerance of {}. They ARE equal to \
@@ -150,7 +150,7 @@ macro_rules! assert_equal_to_atol {
 ///
 /// # Note
 ///
-/// See [`Compare::is_equal_to_rtol`] for details on how equality to within a specified relative
+/// See [`Compare::is_equal_to_rtol_numtest`] for details on how equality to within a specified relative
 /// tolerance is defined.
 ///
 /// # Examples
@@ -169,7 +169,7 @@ macro_rules! assert_equal_to_atol {
 #[macro_export]
 macro_rules! assert_equal_to_rtol {
     ($a:expr, $b:expr, $rtol:expr) => {{
-        let (are_equal, rel_diff) = $a.is_equal_to_rtol($b, $rtol);
+        let (are_equal, rel_diff) = $a.is_equal_to_rtol_numtest($b, $rtol);
         if !are_equal {
             panic!(
                 "\nValues are not equal to within a relative tolerance of {}. They ARE equal to \
